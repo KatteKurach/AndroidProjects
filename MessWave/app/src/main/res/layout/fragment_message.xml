@@ -1,0 +1,43 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.messwave.messwave.MessageFragment">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/sender">
+        <TableRow
+            android:layout_weight="0.7">
+            <ScrollView>
+                <TextView
+                    android:layout_weight="1"
+                    android:singleLine="false"
+                    android:id="@+id/text_mess"
+                    android:inputType="textMultiLine"
+                    android:scrollbars="vertical"
+                    android:layout_height="match_parent"
+                    android:layout_width="350dp"
+                    android:ellipsize="none"
+                    android:maxLines="100"
+                    android:scrollHorizontally="false"/>
+            </ScrollView>
+        </TableRow>
+        <TableRow>
+            <EditText
+                android:maxHeight="100dp"
+                android:id="@+id/get_text"
+                android:layout_weight="0.7"
+                android:scrollbars="vertical"
+                android:inputType="textMultiLine"
+                android:layout_span="29" />
+
+            <ImageView
+                android:id="@+id/sent"
+                android:src="@drawable/ic_send_black_24dp"
+                android:clickable="true"
+                />
+        </TableRow>
+    </TableLayout>
+</FrameLayout>

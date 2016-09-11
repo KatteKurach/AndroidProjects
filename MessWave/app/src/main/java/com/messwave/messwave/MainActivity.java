@@ -4,14 +4,11 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TableLayout;
-
 
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
-    private int[] tabIcons = {android.R.drawable.ic_menu_camera,android.R.drawable.ic_menu_agenda,android.R.drawable.ic_menu_add};
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,17 +20,20 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
-        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+        //Toast t = Toast.makeText(this, String.valueOf(tabLayout.getTabCount()), Toast.LENGTH_LONG);
+        //t.show();
+
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_build_black_24dp);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_black_24dp);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_local_post_office_black_24dp);
     }
 
     private void setupViewPager(ViewPager viewPager) {
 
         FragmentTab adapter = new FragmentTab(getSupportFragmentManager());
-        adapter.addFragment(Tab.newInstance("1"));
-        adapter.addFragment(Tab.newInstance("2"));
-        adapter.addFragment(Tab.newInstance("3"));
+        adapter.addFragment(SettingsFragment.newInstance());
+        adapter.addFragment(ListFragment.newInstance());
+        adapter.addFragment(MessageFragment.newInstance());
         viewPager.setAdapter(adapter);
     }
 }
