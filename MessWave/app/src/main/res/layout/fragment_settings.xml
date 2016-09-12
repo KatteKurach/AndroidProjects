@@ -9,7 +9,9 @@
         android:layout_height="match_parent">
         <TableRow>
             <ImageView
-                android:src="@mipmap/ic_vk"/>
+                android:src="@mipmap/ic_vk"
+                android:id="@+id/vk_login"
+                android:clickable="true"/>
             <Switch
                 android:layout_width="300dip"
                 android:layout_height="wrap_content"
