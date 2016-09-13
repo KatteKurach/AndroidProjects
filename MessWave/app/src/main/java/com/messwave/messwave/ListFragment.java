@@ -50,11 +50,7 @@ public class ListFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         TableRow tr = (TableRow) inflater.inflate(R.layout.table_row, null);
         ImageView img = (ImageView) tr.findViewById(R.id.image);
-        /*if (icon == "gmail"){
-            img.setImageResource(R.mipmap.ic_gmail);
-        } else{
-            img = vk_icon;
-        }*/
+
         TextView txt = (TextView) tr.findViewById(R.id.little_mes);
         txt.setText(mess);
         table.addView(tr);
