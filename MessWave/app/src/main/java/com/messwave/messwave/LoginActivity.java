@@ -15,19 +15,9 @@ import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
 
-/**
- * Activity which displays a login screen to the user, offering registration as
- * well.
- */
 public class LoginActivity extends FragmentActivity {
 
     private boolean isResumed = false;
-
-    /**
-     * Scope is set of required permissions for your application
-     *
-     * @see <a href="https://vk.com/dev/permissions">vk.com api permissions documentation</a>
-     */
     private static final String[] sMyScope = new String[]{
             VKScope.FRIENDS,
             VKScope.WALL,
@@ -67,9 +57,6 @@ public class LoginActivity extends FragmentActivity {
 
             }
         });
-
-//        String[] fingerprint = VKUtil.getCertificateFingerprint(this, this.getPackageName());
-//        Log.d("Fingerprint", fingerprint[0]);
     }
 
     private void showLogout() {

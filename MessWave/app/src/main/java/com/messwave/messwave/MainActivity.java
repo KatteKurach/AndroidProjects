@@ -1,8 +1,8 @@
 package com.messwave.messwave;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,28 +18,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    private ListFragment fragment;
+
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-       // VKSdk.initialize(this);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -47,51 +39,79 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        //Toast t = Toast.makeText(this, String.valueOf(tabLayout.getTabCount()), Toast.LENGTH_LONG);
-        //t.show();
-
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_build_black_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_black_24dp);
         tabLayout.getTabAt(2).setIcon(R.drawable.ic_local_post_office_black_24dp);
 
+        FragmentManager manager = getSupportFragmentManager();
+        fragment = (ListFragment) manager.findFragmentByTag("LIST_OF_MESSAGES");
+       // fragment.add_row("vk", "fd;svamfvmad");
     }
 
+    private void get_user_name(String id, final String chat_name, final String body)
+    {
+        VKRequest user = (VKRequest) VKApi.users().get();
+
+        user.addExtraParameter("user_ids", id);
+        user.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+                JSONArray parser;
+                try {
+                    parser = (response.json).getJSONArray("response");
+
+                    String first_name = parser.getJSONObject(0).getString("first_name");
+                    String last_name = parser.getJSONObject(0).getString("last_name");
+
+                    //fragment.add_row("vk", body);
+                    Log.d("KATRIN", chat_name+" " + first_name + " " + last_name + " : " + body);
+                } catch (Exception e) {
+                    Log.d("KATRIN", "no no no no");
+                }
+            }
+        });
+    }
+
+    private void get_data(){
+
+        Map<String, Object> vkparams = new HashMap<>();
+        vkparams.put("count", 200);
+        vkparams.put("out", 0);
+
+        VKRequest obj = (VKRequest) VKApi.messages().get();
+        obj.addExtraParameters(new VKParameters(vkparams));
+        obj.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+                JSONObject parser;
+                try {
+                    parser = (response.json).getJSONObject("response");
+                    JSONArray array = parser.getJSONArray("items");
+
+                    for (int i = 0; i < array.length(); i++){
+                        String chat_name = array.getJSONObject(i).getString("title").toString();
+                        String body = array.getJSONObject(i).getString("body").toString();
+                        String user_id = array.getJSONObject(i).getString("user_id").toString();
+
+                        if (chat_name == "..."){
+                            chat_name = "";
+                        }
+                        get_user_name(user_id, chat_name, body);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     private void getLongPollServer() {
         try {
-            Map<String, Object> vkparams = new HashMap<>();
-            vkparams.put("count", 200);
-            vkparams.put("out", 0);
-
-            VKRequest obj = (VKRequest) VKApi.messages().get();
-            obj.addExtraParameters(new VKParameters(vkparams));
-            obj.executeWithListener(new VKRequest.VKRequestListener() {
-                @Override
-                public void onComplete(VKResponse response) {
-                    super.onComplete(response);
-                    JSONObject parser = null;
-                    try {
-                        parser = (response.json).getJSONObject("response");
-                        JSONArray array = parser.getJSONArray("items");
-
-                        for (int i = 0; i < array.length(); i++){
-                           // Log.d("KATRIN", )
-
-                            String chatname = array.getJSONObject(i).getString("title").toString();
-                            String body = array.getJSONObject(i).getString("body").toString();
-                            Log.d("KATRIN", chatname+": "+body);
-                        }
-                        //Log.d("KATRIN", array.getJSONObject(0).toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    //Log.d("KATRIN", String.valueOf(response.json));
-                }
-            });
-
+            get_data();
         } catch (Exception e) {
-            Log.d("KATRIN", String.valueOf(e));
+            Log.d("KATRIN", e.toString());
         }
     }
 
@@ -111,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setupViewPager(ViewPager viewPager) {
-
         FragmentTab adapter = new FragmentTab(getSupportFragmentManager());
         adapter.addFragment(SettingsFragment.newInstance());
         adapter.addFragment(ListFragment.newInstance());
