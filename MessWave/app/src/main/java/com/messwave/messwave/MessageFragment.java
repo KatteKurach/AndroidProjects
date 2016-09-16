@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +14,30 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiMessage;
+import com.vk.sdk.dialogs.VKShareDialog;
+import com.vk.sdk.util.VKUtil;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class MessageFragment extends Fragment {
 
     private TextView view_text;
     private EditText get_text;
     private ImageView sent;
+
+    private int current_ID;
+
+    public void setCurrent_ID(int id){
+        current_ID = id;
+    }
 
     public void setView_text(String s){
         view_text.setText(s);
@@ -32,6 +51,8 @@ public class MessageFragment extends Fragment {
         return String.valueOf(get_text.getText());
     }
 
+    public int getCurrent_ID() { return current_ID; }
+
     public MessageFragment() {
     }
 
@@ -39,6 +60,24 @@ public class MessageFragment extends Fragment {
         MessageFragment fragment = new MessageFragment();
         return fragment;
     }
+
+    public void sent_text(String mess) {
+
+        Map<String, Object> m = new HashMap<> ();
+        m.put("user_id", current_ID);
+        Log.d("KATRIN", String.valueOf(current_ID));
+        m.put("message", mess);
+        VKParameters vkParameters = new VKParameters(m);
+        VKRequest vkRequest = new VKRequest("messages.send", vkParameters);
+        vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+               // Log.d("KATRIN", response.toString());
+            }
+        });
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,14 +89,17 @@ public class MessageFragment extends Fragment {
         sent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setView_text(getGet_text());
+
                 Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.like_btn);
                 view.startAnimation(anim);
                 Vibrator vibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
                 vibe.vibrate(100);
+                sent_text(getGet_text());
                 setGet_text();
             }
         });
         return view;
     }
+
+
 }

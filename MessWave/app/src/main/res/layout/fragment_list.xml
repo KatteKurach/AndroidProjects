@@ -3,12 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:tag="LIST_OF_MESSAGES"
-    tools:context="com.messwave.messwave.ListFragment">
+    tools:context="com.messwave.messwave.ListFragment"
+    android:id="@+id/fragment_list">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/mess_table">
-
-    </TableLayout>
+        android:id="@+id/mess_table"/>
+    </ScrollView>
 </FrameLayout>

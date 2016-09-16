@@ -39,6 +39,10 @@ public class SettingsFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     Log.d("KATRIN", "Start activity");
                     startActivity(intent);
+                } else {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    Log.d("KATRIN", "Start activity");
+                    startActivity(intent);
                 }
             }
         });

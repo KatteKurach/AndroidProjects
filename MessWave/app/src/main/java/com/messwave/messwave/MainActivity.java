@@ -1,8 +1,6 @@
 package com.messwave.messwave;
 
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,15 +40,13 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_build_black_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_black_24dp);
         tabLayout.getTabAt(2).setIcon(R.drawable.ic_local_post_office_black_24dp);
-
-        FragmentManager manager = getSupportFragmentManager();
-        fragment = (ListFragment) manager.findFragmentByTag("LIST_OF_MESSAGES");
-       // fragment.add_row("vk", "fd;svamfvmad");
     }
 
     private void get_user_name(String id, final String chat_name, final String body)
     {
         VKRequest user = (VKRequest) VKApi.users().get();
+
+        final int temp_id = Integer.parseInt(id);
 
         user.addExtraParameter("user_ids", id);
         user.executeWithListener(new VKRequest.VKRequestListener() {
@@ -64,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
                     String first_name = parser.getJSONObject(0).getString("first_name");
                     String last_name = parser.getJSONObject(0).getString("last_name");
 
-                    //fragment.add_row("vk", body);
-                    Log.d("KATRIN", chat_name+" " + first_name + " " + last_name + " : " + body);
+                    Message message1 = new Message(temp_id, "vk", first_name+" "+last_name, body);
+                    fragment.add_new_message(message1);
+                    fragment.display_messages();
                 } catch (Exception e) {
                     Log.d("KATRIN", "no no no no");
                 }
@@ -95,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                         String body = array.getJSONObject(i).getString("body").toString();
                         String user_id = array.getJSONObject(i).getString("user_id").toString();
 
-                        if (chat_name == "..."){
+                        if (chat_name == " ... "){
                             chat_name = "";
                         }
                         get_user_name(user_id, chat_name, body);
@@ -133,8 +130,10 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         FragmentTab adapter = new FragmentTab(getSupportFragmentManager());
         adapter.addFragment(SettingsFragment.newInstance());
-        adapter.addFragment(ListFragment.newInstance());
+        fragment = ListFragment.newInstance();
+        adapter.addFragment(fragment);
         adapter.addFragment(MessageFragment.newInstance());
+
         viewPager.setAdapter(adapter);
     }
 }

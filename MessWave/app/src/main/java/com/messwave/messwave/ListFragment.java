@@ -1,20 +1,27 @@
 package com.messwave.messwave;
 
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Icon;
-import android.media.Image;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.vk.sdk.VKSdk;
+
+import java.util.ArrayList;
 
 
 /**
@@ -22,11 +29,11 @@ import android.widget.TextView;
  */
 public class ListFragment extends Fragment {
     private static TableLayout table;
-    private static ImageView vk_icon;
-    private static ImageView gmail_icon;
+    private ViewPager viewPager;
+
+    public ArrayList<Message> messages;
 
     public ListFragment() {
-        // Required empty public constructor
     }
 
     public static ListFragment newInstance() {
@@ -34,26 +41,77 @@ public class ListFragment extends Fragment {
         return fragment;
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        viewPager = (ViewPager) container;
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-        view.setTag("ListFragment");
         table = (TableLayout) view.findViewById(R.id.mess_table);
-        //vk_icon.setImageResource(R.mipmap.ic_vk);
-        //gmail_icon.setImageResource(R.mipmap.ic_gmail);
         return view;
     }
 
-   public void add_row(String icon, String mess) {
-        Log.d("KATRIN", "IN ADD");
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        TableRow tr = (TableRow) inflater.inflate(R.layout.table_row, null);
-        ImageView img = (ImageView) tr.findViewById(R.id.image);
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (VKSdk.isLoggedIn()) {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    display_messages();
+                }
+            });
+            t.start();
+        }
+    }
 
-        TextView txt = (TextView) tr.findViewById(R.id.little_mes);
-        txt.setText(mess);
-        table.addView(tr);
-       Log.d("KATRIN", "add");
+    public void add_new_message(Message message) {
+        if (messages == null) {
+            messages = new ArrayList<Message>();
+        }
+
+        messages.add(message);
+    }
+
+
+    public void display_messages(){
+        if (messages == null){
+            return;
+        }
+        for (int i = 0; i < messages.size(); i++){
+            if (!messages.get(i).getIs_added()){
+                add_row(messages.get(i).getID(), messages.get(i).getTitle(),
+                        messages.get(i).getBody());
+                messages.get(i).setIs_added();
+            }
+        }
+    }
+
+   public void add_row(int id, String title, String mess) {
+       if (getActivity() == null){
+           Log.d("KATRIN", "null!!!!!!!");
+       }
+       final LayoutInflater inflater = getActivity().getLayoutInflater();
+
+       TableRow tr = (TableRow) inflater.inflate(R.layout.table_row, null);
+       tr.setClickable(true);
+       final String temp_mess = mess;
+       final int temp_id = id;
+       tr.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               Vibrator vibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+               vibe.vibrate(100);
+               viewPager.setCurrentItem(2);
+               MessageFragment fragment = (MessageFragment) getActivity().getSupportFragmentManager().findFragmentByTag("android:switcher:"
+               +R.id.viewpager+":2");
+               fragment.setView_text(temp_mess);
+               fragment.setCurrent_ID(temp_id);
+           }
+       });
+
+       TextView txt = (TextView) tr.findViewById(R.id.little_mes);
+       txt.setText(title+":"+'\n'+mess);
+       table.addView(tr);
     }
 }
