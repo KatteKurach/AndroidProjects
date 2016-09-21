@@ -68,8 +68,6 @@ public class MessageFragment extends Fragment {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
-               // Log.d("KATRIN", response.toString());
-                return null;
             }
         });
     }

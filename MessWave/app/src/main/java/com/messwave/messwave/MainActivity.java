@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ListFragment fragment;
 
-    private String id;
+    private String owner_id;
 
     DBHelper dbHelper;
 
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         get_id();
         dbHelper = new DBHelper(this);
+        dbHelper.getWritableDatabase();
     }
 
     private void get_id(){
@@ -57,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray parser;
                 try {
                     parser = (response.json).getJSONArray("response");
-                    id = parser.getJSONObject(0).getString("id");
+                    owner_id = parser.getJSONObject(0).getString("id");
 
                 } catch (Exception e) {
-                    Log.d("KATRIN", "no no no no");
+                    Log.d("KATRIN", "my id");
                 }
             }
         });
@@ -84,12 +85,12 @@ public class MainActivity extends AppCompatActivity {
 
                     String first_name = parser.getJSONObject(0).getString("first_name");
                     String last_name = parser.getJSONObject(0).getString("last_name");
-
-                    Message message1 = new Message(dbHelper, temp_id, "vk", first_name+" "+last_name, body);
-                    fragment.add_new_message(message1);
+                    Log.d("KATRIN", "IN main");
+                    Message message1 = new Message(dbHelper, temp_id, owner_id, first_name+" "+last_name, body);
+                 //   fragment.add_new_message(message1);
                     fragment.display_messages();
                 } catch (Exception e) {
-                    Log.d("KATRIN", "no no no no");
+                    Log.d("KATRIN", e.toString());
                 }
             }
         });
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void get_data(){
+
 
         Map<String, Object> vkparams = new HashMap<>();
         vkparams.put("count", 200);
@@ -109,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
                 JSONObject parser;
-                try {
+                    try {
                     parser = (response.json).getJSONObject("response");
                     JSONArray array = parser.getJSONArray("items");
                     for (int i = 0; i < array.length(); i++){
@@ -120,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
                         if (chat_name == " ... "){
                             chat_name = "";
                         }
-
                         get_user_name(user_id, chat_name, body);
                     }
                 } catch (JSONException e) {
