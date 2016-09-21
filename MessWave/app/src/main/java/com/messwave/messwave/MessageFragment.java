@@ -14,14 +14,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.vk.sdk.VKSdk;
-import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.model.VKApiMessage;
-import com.vk.sdk.dialogs.VKShareDialog;
-import com.vk.sdk.util.VKUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,6 +69,7 @@ public class MessageFragment extends Fragment {
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
                // Log.d("KATRIN", response.toString());
+                return null;
             }
         });
     }

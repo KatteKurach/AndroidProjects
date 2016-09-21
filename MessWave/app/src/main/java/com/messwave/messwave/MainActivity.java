@@ -26,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ListFragment fragment;
 
+    private String id;
+
+    DBHelper dbHelper;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +43,29 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_build_black_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_black_24dp);
         tabLayout.getTabAt(2).setIcon(R.drawable.ic_local_post_office_black_24dp);
+
+        get_id();
+        dbHelper = new DBHelper(this);
     }
+
+    private void get_id(){
+        VKRequest info = (VKRequest) VKApi.users().get();
+        info.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+                JSONArray parser;
+                try {
+                    parser = (response.json).getJSONArray("response");
+                    id = parser.getJSONObject(0).getString("id");
+
+                } catch (Exception e) {
+                    Log.d("KATRIN", "no no no no");
+                }
+            }
+        });
+    }
+
 
     private void get_user_name(String id, final String chat_name, final String body)
     {
@@ -60,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     String first_name = parser.getJSONObject(0).getString("first_name");
                     String last_name = parser.getJSONObject(0).getString("last_name");
 
-                    Message message1 = new Message(temp_id, "vk", first_name+" "+last_name, body);
+                    Message message1 = new Message(dbHelper, temp_id, "vk", first_name+" "+last_name, body);
                     fragment.add_new_message(message1);
                     fragment.display_messages();
                 } catch (Exception e) {
@@ -69,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void get_data(){
 
@@ -86,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     parser = (response.json).getJSONObject("response");
                     JSONArray array = parser.getJSONArray("items");
-
                     for (int i = 0; i < array.length(); i++){
                         String chat_name = array.getJSONObject(i).getString("title").toString();
                         String body = array.getJSONObject(i).getString("body").toString();
@@ -95,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         if (chat_name == " ... "){
                             chat_name = "";
                         }
+
                         get_user_name(user_id, chat_name, body);
                     }
                 } catch (JSONException e) {

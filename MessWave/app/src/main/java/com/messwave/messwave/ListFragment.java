@@ -80,7 +80,7 @@ public class ListFragment extends Fragment {
         }
         for (int i = 0; i < messages.size(); i++){
             if (!messages.get(i).getIs_added()){
-                add_row(messages.get(i).getID(), messages.get(i).getTitle(),
+                add_row(messages.get(i).getSender_ID(), messages.get(i).getTitle(),
                         messages.get(i).getBody());
                 messages.get(i).setIs_added();
             }
