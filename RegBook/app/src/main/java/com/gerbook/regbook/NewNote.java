@@ -8,8 +8,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * Created by ekaterinakurach on 9/26/16.
@@ -28,16 +30,29 @@ public class NewNote extends Activity {
             public void onClick(View view) {
                 String name = String.valueOf(((EditText) findViewById(R.id.name)).getText());
                 String number = String.valueOf(((EditText) findViewById(R.id.number)).getText());
-                add_database(name, number);
-                MyNDK d = new MyNDK();
-                Log.d("KATRIN", String.valueOf(d.getStat("+")));
-                Log.d("KATRIN", "HEEAR");
-                Intent intent = new Intent(NewNote.this, MainActivity.class);
-                startActivity(intent);
+                if (name.equals("") || number.equals("")){
+                    Toast.makeText(view.getContext(), "Write data!", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (check_number(view, number)) {
+                        add_database(name, number);
+                        Intent intent = new Intent(NewNote.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                }
             }
         });
     }
 
+    public boolean check_number(View v, String number){
+        MyNDK d = new MyNDK();
+        if (String.valueOf(d.validate(number)).equals("good")){
+            return true;
+        }
+        else {
+            Toast.makeText(v.getContext(), d.validate(number), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
     public void add_database(String name, String number){
         SQLiteDatabase database = dBhelper.getReadableDatabase();
         ContentValues contentValues = new ContentValues();

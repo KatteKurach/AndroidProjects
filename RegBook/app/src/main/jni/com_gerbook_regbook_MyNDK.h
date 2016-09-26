@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     com_gerbook_regbook_MyNDK
- * Method:    getStat
+ * Method:    validate
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jboolean JNICALL Java_com_gerbook_regbook_MyNDK_getStat
+JNIEXPORT jstring JNICALL Java_com_gerbook_regbook_MyNDK_validate
   (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus

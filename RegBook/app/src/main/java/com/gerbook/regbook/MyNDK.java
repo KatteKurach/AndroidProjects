@@ -12,5 +12,5 @@ public class MyNDK  {
         System.loadLibrary("MyLibrary");
     }
 
-    public native boolean getStat(String a);
+    public native String validate(String a);
 }
